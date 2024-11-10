@@ -1,0 +1,919 @@
+Sun 27 Nov 23:00:00 1994  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.32 Release Jafar としてリリース
+
+Sun 27 Nov 22:13:53 1994  Keiichirou Murakami  (disneyland)
+
+	* src/mbstring/_mbset.c, src/mbstring/mbscpy.c,
+	src/mbstring/mbsncpy.c, src/mbstring/mbsncat.c,
+	src/mbstring/mbslwr.c, src/mbstring/mbsupr.c: mbsset()を誤った
+	仕様で用いていたために先の mbsset()修正にともなってこちらも修
+	正。従来の機能を_mbset()で置き換えた。
+
+	* src/stdlib/_round.c, src/stdlib/_dtos18.c,
+	src/stdlib/_ulltoa.s, src/stdlib/_ultoa.s,
+	src/stdlib/econvert.c, src/stdlib/fconvert.c,
+	src/stdlib/fcvt.c, src/stdio/_doprnt.c: 浮動小数点を文字列に変
+	換する処理をFLOATパッケージではなく自前でやるようにした。速度
+	は確かに遅くなるが精度は若干あがった。また、同様の関数
+	econvert(), fconvert() を追加。ただし、gcvt()は以前の通り。
+
+Sun 20 Nov 02:38:07 1994  Keiichirou Murakami  (disneyland)
+
+	* include/stdlib.h, include/stdio.h, include/sys/xstdlib.h,
+	src/stdlib/malloc.c, src/stdlib/mallocmap.c: ヒープ領域の使用
+	状況を出力する関数 mallocmap(), fmallocmap() を新たに追加した。
+
+Sat 19 Nov 14:11:13 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_sinit.c, src/stdio/gets.c, src/unistd/_open.c,
+	src/unistd/close.c, src/unistd/ctermid.c,
+	src/unistd/ftruncate.c, src/unistd/isatty.c,
+	src/unistd/lseek.c, src/unistd/read.c, src/unistd/tcgetpgrp.c,
+	src/unistd/tcsetpgrp.c, src/unistd/tell.c,
+	src/unistd/ttyname.c: NULデバイスは端末に結び付いていないので
+	TTYではない。NULデバイスを特例とするように修正。また、キャラク
+	タデバイスの判断方法を変更した。
+
+	* include/doslib.h, include/iocslib.h: sys/dos.h や sys/iocs.h
+	とで定義の異なる構造体を引数に持つ関数で、どうやってもプロトタ
+	イプエラーが出てしまう不具合を修正。ただし、当該構造体へのポイ
+	ンタの型チェックに限って無効になる。
+
+	* src/stdio/_doprnt.c: 下請けの fputc のエラーを見ていなかった
+	のでディスクフルやその他のエラーが起こった時にもそのエラーを検
+	出できなかったのを修正。
+
+Tue  8 Nov 03:37:28 1994  Keiji Ohnishi  (tokyo)
+
+	* src/sys_dos/ioctrlfdctl.s: _dos_ioctrlfdctl の関数名が異なっ
+	て定義されていたのを修正。
+
+	* src/dirent/opendir.c, src/sys_stat/_stat.c,
+	src/sys_stat/_getinode.c, src/sys_stat/fstat.c: CD-ROM ドライ
+	バ (ネットワークドライブも?) の場合にも正常動作するように対応
+	(ただし st_ino, st_size (ディレクトリの場合) は 0 になる)。
+
+Tue  1 Nov 00:27:29 1994  Keiichirou Murakami  (disneyland)
+
+	* src/DefaultBases, src/DefaultRules, src/Makefile,
+	src/Makefile.SX, src/*/Makefile: ライブラリの作成ルールを変更
+	し、各ディレクトリからアップデートをかけるようにした。速度は遅
+	くなる。
+
+	* include/alloca.h: __ALOCA_STACK_CHECK__ を定義し、スタックチェッ
+	クを行うようにして alloca() を用いる場合のコードが誤っており、
+	正しいコードを出せなかった。これを修正。
+
+	* src/sys_doseml/d_readlink.c: パス名の格納バッファのサイズが
+	パス名の長さと同じだった場合、今まではエラーとしていたがそのま
+	ま格納するようにした。ただしこの場合は最後の NUL 文字はつかな
+	い。
+
+Thu 20 Oct 01:18:30 1994 Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/mktemp.c: エラーになった場合は -1 を返さなければ
+	ならないのに NULL を返していた。また、テンプレートが一意にでき
+	ない場合は NULL 文字列を返すようにした。
+
+	* include/sys/timeb.h, src/sys_timeb/ftime.c: timeb 構造体のメ
+	ンバ名が間違っていた。正しくは millitim -> millitm である。
+
+	* src/unistd/_spawn.c: シグナル機構を利用し、SYSTEM_SHELLTYPE
+	を unix とすると2回目以降の system() で、trap14 のベクタを戻す
+	のに失敗する不具合を修正。
+
+	* src/unistd/setmode.c: 戻り値として設定前のモードを返すことに
+	なっているが単純に 0 しか返していなかった点を修正。
+
+	* include/sys/xsignal.h, src/signal/_intrtc.s,
+	src/signal/_sigclrcnt.c, src/signal/_sigsetcnt.c: alarm(0) を
+	行った時のタイミングによる動作の不安定さを修正。
+
+	* src/mbstring/mbsset.c: 文字列を指定したマルチバイト文字で埋
+	めるはずが最初の1マルチバイト文字だけしか処理していなかった。
+	これを修正。
+
+Thu 11 Sep 04:06:46 1994  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/unlink.c: 存在するディレクトリへのシンボリックリ
+	ンクファイルを削除できなかった点を修正。
+
+	* src/stdlib/mbstowcs.c: 戻り値は変更した幅広文字列の要素数(た
+	だし終端の null character を除く)でなければならないが、変換元
+	のマルチバイト文字列のバイト数を返していた。これを修正。
+
+	* src/unistd/_open.c: オープンしたファイルのデバイス属性を調べ
+	る部分が誤っており、ある条件を満たしたブロックデバイスにをキャ
+	ラクタデバイスとして扱ってしまう不具合があった。これを修正。
+
+Mon  1 Aug 00:00:00 1994  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.31 Release Aladin としてリリース
+
+Thu 28 Jul 07:30:00 1994  Keiji Ohnishi  (tokyo)
+
+	* src/math/_split.awk, src/math/mathcc: HAS がコプロ命令をサポー
+	トしたことにともない fascv.x で行っていたコプロ命令の変換処理
+	を削除した。
+
+Mon 11 Jul 23:00:54 1994  Keiichirou Murakami  (disneyland)
+
+	* src/string/strerror.c, src/signal/strsignal.c,
+	src/errno/_errlist.c, src/signal/_siglist.c: strerror() および
+	strsignal() 関数で不正なエラー番号、シグナル番号を指定した場合
+	に従来は NULL を返していた。これを "Unknown" であるというメッ
+	セージを返すようにした。perror(), psignal() も影響をうける。
+
+Thu  7 Jul 02:26:53 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/fgets.c: 改行を読み込まずに EOF に達した場合に正し
+	く EOF を検出できない不具合があった。これを修正。
+
+Tue  5 Jul 23:56:57 1994  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_open.c: 標準入出力における NUL デバイスもキャラ
+	クタデバイスと同様に扱わなければならない。
+
+	* src/startup/_enhupair.c: 空文字列が引数列に含まれていた場合
+	にも正しくクオートを施してエンコードするように修正した。
+
+Tue  5 Jul 20:22:13 1994  Keiji Ohnishi  (tokyo)
+
+	* src/stdio/rename.c: 同一ファイルに対する操作 rename ("foo",
+	"FOO") が、前回の修正のエンバグでエラーとなっていたのを修正。
+
+Sat 25 Jun 06:08:26 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_doprnt.c: フォーマット文字として %b を加えた。こ
+	れは2進数を表示する。なお、# 拡張があった場合 0b のプレフィク
+	スが付く。
+
+Tue 21 Jun 01:40:42 1994  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/read.c: テキストモードでファイルの最後が 0x0D だっ
+	た場合に 0x0A (LF) チェックの先読みによってファイルポインタが
+	図らずも -1 ずれてしまう不具合を修正した。
+
+	* src/stdlib/_path.c: SYSROOT を見ないように元に戻した。この変
+	更で SYSROOT は passwd, group ファイルを見るためだけに使われる
+	ようになる。
+
+Sun 19 Jun 14:31:09 1994  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_open.c: 処理を行う前に構造体の内容を 0 クリアす
+	るように変更した。
+
+	* include, src: SX-Window 用のライブラリ libsxc のためのシンボ
+	ルとして __LIBSXC__ と __LIBC_SX__ の 2 種類が混在していたので
+	__LIBSXC__ に統一した。
+
+Sun 12 Jun 20:19:15 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/putenv.c: 引き数に "foo=" のような指定をすると環
+	境変数 foo が削除される。この時 foo が存在しなかったら従来はエ
+	ラーとなっていたが、単に無視するようにし、戻り値は成功と同じに
+	する。
+
+Sun  5 Jun 12:29:22 1994  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/dup2.c: dup2()で、dupする先のファイルハンドルが使
+	用中だった場合、まずそれをクローズしなければならない。が、その
+	使用中かどうかの判定式が誤っておりクローズされていなかった。こ
+	れを修正。
+
+	* src/stdio/getw.c, src/stdio/putw.c: getw(),putw() で高速化の
+	ために内部のメモリ転送だけですませるロジックがあったが、テキス
+	トモードでばうまく機能しないので（テキストモードで使うものでは
+	ないのだが...）単純なロジックに変更した。
+
+	* src/unistd/unlink.c: オープン中のファイルを削除しようとする
+	場合、 unlink() は実際の操作が close() 後に行われるように「予
+	約」する。この予約を最初に見つかったファイルハンドルだけでなく
+	全てについて行うように変更した（dup されていることがあるため）。
+
+Wed  1 Jun 01:13:57 1994  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h, include/sys/iocs_i.h: GCC の新オプショ
+	ンである -fansi-only に対応するために DOSCALL -> __DOSCALL,
+	SXCALL -> __SXCALL, asm -> __asm, volatile -> __volatile とい
+	うように文字列の置換を行った。
+
+	* src/DefaultBases: has および gcc が参照するインクルードパス
+	を Makefile で無効化し、オプションで必ず目的のものを得ることが
+	できるように変更した。
+
+	* include/sys/iocs_i.h: _iocs_ms_sel2() の定義が誤っており、
+	_iocs_ms_sel() と同じになっていた。これを修正した。
+
+	* include/string.h: マクロでは movedata() == memmove() として
+	扱っていたが仕様的に見ると、movedata() == memcpy() なのでその
+	ように修正した。
+
+Wed 25 May 16:04:08 1994  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_enargv.c, src/argvz/_enargv.c: HUPAIR 以外のイ
+	ンタフェースで起動された場合の argv[0] の設定をフルパスに戻し
+	た。これに関連して libargvz.a は廃止した。HUPAIR インタフェー
+	スで起動された場合は同じ。
+
+	* include/errno.h, include/mbctype.h, include/time.h,
+	src/sxstartup/_superman.c, src/time/dumtz.c,
+	src/ctype/_errlist.c, src/sxstartup/_exec_kernel.c,
+	src/ctype/_lower.c, src/ctype/_mbctype.c, src/ctype/_upper.c,
+	src/sxstartup/_exit.c, src/sxstartup/_start.c,
+	src/stdlib/free.c: libsxc-1.1.30a 用のパッチを当て、libsxc.a 
+	をコンパイルできるようにした。しかし以前としてテストはしていな
+	い。詳細は doc/libsxc.doc を参照のこと。
+
+Mon 23 May 05:08:10 1994  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.30B Release Genie としてパッチリリース
+
+Mon 23 May 05:08:10 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_sread.c: EOF を越えた getc() マクロの使用によって
+	生じる不具合 (flush できずに fseek がエラーになるなど) を修正
+	した。
+
+	* src/stdlib/brk.c: ブレーク値の変更部分が誤っており、ページバ
+	ンダリに整合した値になっていなかった。これを修正。
+
+	* src/stdio/fread.c, src/stdio/fwrite.c: fread() がテキストモー
+	ドに対応していなかった (read は指定したバイト数よりも少ない値
+	を返すことがある) のでこれを修正した。fwrite() の方は特に問題
+	なかったが fread() と同じアルゴリズムに変更した。これにより 
+	fread/fwrite ともに stdio のバッファリング定数に大きく性能が左
+	右されるようになった。
+
+Mon 03 May 00:00:00 1994  Keiji Ohnishi  (tokyo)
+
+	* libc-1.1.30A Release Genie としてリリース
+
+Sun 01 May 23:30:00 1994  Keiji Ohnishi  (tokyo)
+
+	* libc-1.1.30 Release Genie としてリリース・・・したが・・・
+	ファイルシステム異常の為アーカイブに不具合があったので１日で
+	闇に葬った・・・。
+
+Mon 02 May 20:10:45 1994  Keiji Ohnishi  (tokyo)
+
+	* src/sys_scsi/request.s: SCSI IOCS に渡すレジスタが誤っていた
+	のを修正、ついでにレジスタ最適化。
+
+Sat 30 Apr 22:53:56 1994  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_exit.c, src/stdlib/exit.c: プロファイラの処理を
+	exit から _exitに移動。
+
+	* src/glob/_addlsep.c, src/glob/_dellsep.c: 処理を高速化すると
+	同時に漢字対応を完全にした。
+
+Fri 29 Apr 23:10:00 1994  Keiji Ohnishi  (tokyo)
+
+	* src/stdlib/_path.c: SYSROOT の対応が不完全だったので修正。
+
+Fri 29 Apr 23:05:30 1994  Keiji Ohnishi  (tokyo)
+
+	* include/ctype.h, src/ctype/isblank.c: isblank() はマスクを使
+	わないタイプに修正した。マスクの誤りと 8bit マスクに入り切らな
+	いため。
+
+Mon 25 Apr 22:35:33 1994  Keiji Ohnishi  (tokyo)
+
+	* src/unistd/_exec.s, src/unistd/_return.s: 退避するレジスタの
+	数を減らした。
+
+	* src/unistd/_spawn.c, src/stdlib/system.c: SHELL が COMMAND.X
+	だったり、インダイレクト起動の場合にシグナル機能を元に戻す処理
+	を忘れていたため、これを修正。
+
+	* include/sys/stat.h, src/sys_stat/_stat.c,
+	src/sys_stat/fstat.c : st_blksize メンバを struct stat に加え
+	た。ただし、サイズは 8192 に固定。
+
+Sun 20 Mar 22:20:00 1994  Keiji Ohnishi  (tokyo)
+
+	* include/sys/dos.h, src/sys_stat/fstat.c: getfcb の構造体のメ
+	ンバに誤りが在ったため、fstat の st_ino, st_dev 等が正常に求め
+	られない場合があったので、これを修正。また、それにともない 
+	fstat.c を修正。
+
+Sun 20 Mar 22:10:00 1994  Keiji Ohnishi  (tokyo)
+
+	* src/stdio/rename.c: dest のファイルが存在した場合に、正常に
+	rename できない場合があったので、これを修正。
+
+Mon 22 Feb 00:53:56 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/bsearch.c: bsearch() の検索終了条件が誤っており、
+	正しく検索できない場合があったので、これを修正した。
+
+	* include/sys/dos_i.h: 処理が複雑なために DOSCALL 化できなかっ
+	た一部の関数で、インラインアセンブラの制約文字である "g" を
+	"ri" に変更した。
+
+Sun 20 Feb 23:31:45 1994  Keiichirou Murakami  (disneyland)
+
+	* src/sys_iocs/b_super.s, include/sys/iocs_i.h:
+	_iocs_b_super() が誤っており、スタックがずれることがあったので、
+	これを修正。
+
+Sat 19 Feb 01:09:01 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/putw.c, src/stdio/getw.c: getw() での EOF 判定条件
+	が、また putw() での書き込み失敗の判定条件が誤っていたのを修正
+	した。
+
+	* src/stdlib/calloc.c: 引き数チェックルーチンを改良した。
+
+Sat 12 Feb 14:38:47 1994  Keiichirou Murakami  (disneyland)
+
+	* src/signal/_intctl.s, src/signal/_interr.s: siglongjmp() が
+	参照する退避 SP,USP,SR の内容をセーブするのを忘れていたのでそ
+	れを修正した。
+
+	* src/signal/setjmp.s, src/signal/longjmp.s, include/setjmp.h:
+	シグナルを利用する場合には従来の setjmp(), longjmp() もシグナ
+	ルマスクを自動的に退避、復帰するように変更した。
+
+Fri 11 Feb 23:34:22 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/qsort.s: ソース中の dbra 定数が誤っていたのでそれ
+	を修正した。
+
+Thu 10 Feb 00:40:51 1994  Keiichirou Murakami  (disneyland)
+
+	* src/signal/sigprocmask.c: 変更後のシグナルマスクを設定する部
+	分が誤っており、実際に変更されていなかった。これを修正。
+
+Thu  3 Feb 03:02:13 1994  Keiichirou Murakami  (disneyland)
+
+	* include/doscall.equ: _di_fnckeyst に対する EQU 値が誤ってい
+	たので修正した。
+
+	* src/conio/getch.c, src/conio/getche.c: ASK V3が登録されてい
+	ない状態だと、キー入力待ちを行わない不具合を修正。
+	(と、いうことは、ASK V3を入れるとDOS CALLの仕様がバグる)
+
+Sat 15 Jan 21:49:10 1994  Keiichirou Murakami  (disneyland)
+
+	* src/assert/_assert.c: SX 版の BUGFIX: インライン・アセンブラ
+	後の処理が誤っていたのを修正。
+
+	* src/dirent/opendir.c: SX 版の BUGFIX: TSNFiles の引き数が足
+	りなかったのを追加した。
+
+	* src/sxstartup/_exec_kernel.c: SX 版の BUGFIX: <errno.h> をイ
+	ンクルードし忘れていたので追加した。
+
+	* include/sys/xstart_sx.h: SX 版の BUGFIX: 二重定義を防ぐマク
+	ロが誤っていたので修正。
+
+	* include/sys/xstart_hu.h: SX 版の BUGFIX: 二重定義を防ぐマク
+	ロが誤っていたので修正。
+
+	* include/sys/xstart_sx.h: SX 版の BUGFIX: _sxkernelcomm 変数
+	の定義が誤っていたのを修正。
+
+	* src/sxstartup/_getmem_size.c: SX 版の BUGFIX: インクルードす
+	るヘッダの名称を誤っていたのを修正した。
+
+	* src/sxstartup/_sxkillheap.c: SX 版の BUGFIX: インクルードす
+	るヘッダの名称を誤っていたのを修正した。
+
+	* include/sys/dos_i.h: SX 版の BUGFIX: SX モードでは DOSCALL 
+	識別子を用いるとエラーになってしまうので SXCALL で代用する。
+
+Wed 09 Dec 00:51:02 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/popen.c, src/stdio/pclose.c: popen() の指定時にテ
+	キスト/バイナリモードを指定できるように変更した。意味があるの
+	かどうかはよくわからない。
+
+	* src/stdlib/system.c: command.x タイプのシェル上で実行する場
+	合に割り込み（シグナル関係）のリセットを行っていなかった部分を
+	修正した。また、command.x タイプのシェル上でコマンド実行が失敗
+	した場合にカレントディレクトリや DUP したファイルハンドルを元
+	に戻していなかった点を修正。
+
+Sat 27 Nov 20:11:31 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/types.h: dosmode_t および devmode_t のサイズが
+	sys/dos.h の定義と異なっていたのでどちらも int となるように修
+	正した。
+
+	* src/stdio/_sread.c, include/stdio.h: _sread() と getc/putc 
+	マクロを修正した。根源は Sun 22 Aug に行った修正がまだ不完全だっ
+	たため。EOF 関連のバグフィクス。
+
+Tue 23 Nov 19:17:31 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_stat.c, src/sys_doseml/d_readlink.c: リンクさ
+	れたファイル名が化けることがあったのを修正。また、シンボリック
+	リンクされたファイルがルートディレクトリを指していた場合に正し
+	く処理できるように修正した。
+
+Mon 22 Nov 00:12:47 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_doscan.c: フィールド幅 1 の読み込みに失敗した場合
+	でもエラーとならず処理が続行するようになっていた。これを修正し、
+	正しく処理されるようにした。
+
+Mon 16 Nov 01:51:50 1993  Keiichirou Murakami  (disneyland)
+
+	* src/sys_stat/chmod.c: 変更前のファイルモードに対して行うマス
+	キングのビットに S_IRDONLY と S_IEXBIT を追加した。これがある
+	ことで S_IEXEC や S_IWRITE の指定が無効になってしまう。
+
+Sun 14 Nov 21:44:43 1993  Keiichirou Murakami  (disneyland)
+
+	* include/string.h: memcmpi(), strcasecmp(), strcmpi(),
+	strncasecmp() のプロトタイプが欠けていたので追加した (直前の変
+	更による修正忘れ)。
+
+	* include/dirent.h: rewinddir() のマクロ定義が欠けていたので追
+	加した。
+
+Sat 13 Nov 18:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.29 Release Mr.Bank としてリリース
+
+Sat 13 Nov 15:03:50 1993  Keiichirou Murakami  (disneyland)
+
+	* src/sys_timers/getclock.c, src/sys_timers/setclock.c: システ
+	ムクロック関係の関数 getclock() および setclock() を新たに作成
+	して追加した。
+
+Sat 13 Nov 02:38:46 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/_makepath.c: _makepath() の extension 部に '.' が
+	含まれたデータを渡された場合の処理が抜けていたのでこれを追加し
+	た。
+
+	* include/sys/dos_i.h, include/doscall.equ: 全く新しいバージョ
+	ンとして書き直した。したがってまたなにがしかのバグが混入した可
+	能性がある。
+
+	* src/glob/_print.c: 出力がリダイレクトの有無に影響されないよ
+	うな出力方式に変更した。
+
+Sun  7 Nov 10:10:31 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/read.c: read() で、入力先がキーボードの場合はデバ
+	イスの RAW/COOKED モードを考慮して処理するよう修正した。
+
+Sat  6 Nov 21:00:00 1993  Keiji Ohnishi  (tokyo)
+
+	* src/signal/_signal.c, src/signal/_harderr.c,
+	src/signal/_interr.s, include/sys/xsignal.h, include/signal.h:
+	MS-C 互換のハードエラー処理関数である _harderr() および
+	_hardresume(), _hardretn() を新たに作成し、それを signal 処理
+	関数の一部として提供するようにした (MS-C では dos.h に定義され
+	るが、ここでは signal.h に定義した)。
+
+	* src/math/_iscopro.c: 認識する MPU の種類に MC68040 を追加し
+	た。これにより、 040 上ではコプロアクセスすることになる。現在
+	はまともにサポートされていないので動作は不明である。もし調子が
+	悪ければ -+-f オプションを用いると良い（かもしれない）。
+
+Sat  6 Nov 21:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/iocs_i.h: _iocs_ontime() で d1 レジスタが破壊さ
+	れる不具合があったのでこれを修正した。
+
+	* src/stdio/_doprnt.c: 精度指定があった場合に 0 パディングモー
+	ドが無効になってしまう不具合を修正した。また、%g,%G 指定の場合、
+	精度が 0 の時の E, F フォーマット選択の判定が誤っていた。
+
+	* src/stdio/tmpfile.c: テンポラリファイルがテキストモードでオー
+	プンされていた。これをバイナリモードがデフォルトとなるように不
+	具合を修正。
+
+	* src/stdio/_doscan.c: '*' フラグによって実際の代入が抑制され
+	たものに関してはマッチカウントを加算しないように修正した。また、
+	同様に、'%n' による現在位置読み出しもマッチカウントを加算しな
+	いように修正した。
+
+	* src/stdio/_doscan.c: '%c' あるいは '%s' で一文字もマッチしな
+	かった場合でも、フィールド幅が 0 の場合はエラーとならないよう
+	に修正した。また、 '%s' で一文字もマッチせずに終わった場合（入
+	力エラー）でも、空文字をバッファに設定するように修正した。
+
+	* src/stdlib/strtoul.c: strtoul() は文字列を unsigned long に
+	変換するための関数だが、演算上マイナス符号も受け付けなければな
+	らない。そのように変更し、正しい仕様に戻した。これにより従来
+	_doscan() で、unsigned 系の変換指示子で負数を読み込んだ場合に
+	出ていた不具合がなくなる。
+
+Sun 10 Oct 22:18:21 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/getopt.c: オプション文字列として "ab" などとした
+	場合、-a -b という書き方以外に -ab という書き方をした場合も正
+	しく認識するように変更した。
+
+Sun 10 Oct 21:28:53 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_scsi: SCSI IOCS の word 引数の部分で、レジスタの上位
+	ワードが 0 でないと正しく動作しない場合があると風の噂に聞いた
+	ので、百歩譲ってクリアするようにしてみた。
+
+Thu  7 Oct 21:46:47 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: void 型の関数に関してもレジスタ d0 が破
+	壊されることを明示的に指示するようにしないとインライン展開の結
+	果不都合が起こることがあった。これを修正。
+
+	* src/mbstring/mbbtombc.c, src/mbstring/mbctombb.c: XC でいう
+	ところの zentohan() および hantozen() を大野(oo)さんからいただ
+	き、新たにリリースに含めた。
+
+Wed  6 Oct 01:13:46 1993  Keiichirou Murakami  (disneyland)
+
+	* src/conio: コンソール直接入出力を行う仕様にもかかわらずリダ
+	イレクトによって影響されていた。出力に関しては正しくコンソール
+	直接出力とし、入力に関しても対処した。だが、cgets() がリダイレ
+	クトに影響される点はまだ修正中。自前で行編集を行うしかないのか
+	もしれない。
+
+	* include: プロトタイプ宣言を囲んでいるマクロ EXT() が
+	patch(1) のソースにも存在するためにエラーになる。なにかとあり
+	がちな名前なのでこちらの側で名前を _EXTERN に変更した。
+
+Mon  4 Oct 00:58:31 1993  Keiichirou Murakami  (disneyland)
+
+	* glob: libc-1.1.28 を SX libc に対応させるための差分を適用し、
+	内部に取り込んだ。これについては幾人もの方々の努力のおかげです。
+	どうもご苦労様でした。ただ、わたしは SX のプログラミングは素人
+	以下なのでなにも分かりません。従ってテストもしておりません...
+
+Tue 28 Sep 02:29:05 1993  Keiichirou Murakami  (disneyland)
+
+	* include/doscall.mac, include/iocscall.mac, src/sys_dos,
+	src/sys_iocs, src/sys_scsi, src/signal, src/startup:
+	doscall.mac, iocscall.mac に定義されているシンボル名の先頭から
+	_（アンダースコア）を追加した。特定の状況でのシンボルの混乱を
+	避けるためである。
+
+Sun 26 Sep 21:57:23 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/fread.c: 読み込み中に EOF に達した場合、指定した項
+	目数以下の値が返るが、この時ストリームに終端指示子が立っていな
+	かった。これを修正。
+
+Sun 26 Sep 21:57:23 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_doseml/d_import.c: libc を使ったプログラムをダンプし、
+	実行ファイルを再構成した場合（Nemacs, MicroEmacs など）に問題
+	となるようなデータセクションの初期値に依存する問題を解消した。
+
+Thu 16 Sep 23:25:50 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/unlink.c: unlink() するファイルがシンボリックリン
+	クファイルでかつそのリンク先が存在しない場合に削除できなかった。
+	これを修正。
+
+	* src/startup/_stack{def,siz}.s, src/startup/_heap{def,siz}.s:
+	前回デフォルトのヒープサイズとスタックサイズを gcc のコマンド
+	ラインから設定可能にしたが、その方法に誤りがあったので修正した。
+
+Wed 15 Sep 00:33:27 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_spawn.c, src/unistd/spawn*.c,
+	src/unistd/exec*.c: exec*p() および spawn*p() 以外の関数でも実
+	質的には環境変数 path に従ってコマンド検索を行っていたが、これ
+	をより規定に忠実に修正した (exec*p(), spawn*p() 以外の関数は
+	path を検索しない)。
+
+	* src/string/memicmp.s, src/string/stricmp.s,
+	src/string/strnicmp.s: 従来 strcasecmp(), strncasecmp(),
+	memcmpi(), strcmpi() は同じ働きをする別の関数へのエイリアスと
+	して #define 定義されていたが、 GNU product における configure
+	で支障がでる (必ず string.h を必要とする) ので実際のラベルとし
+	て定義した。もちろん実体は全て同じである。
+
+	* include/doslib.h, include/iocslib.h: SCSI コールの互換定義を
+	doslib.h から iocslib.h に移動した。また、構造体の名前の互換定
+	義が欠けていたのと、いくつかの関数の互換定義が抜けていたのを追
+	加した。
+
+Mon 13 Sep 00:07:07 1993  Keiichirou Murakami  (disneyland)
+
+	* src/signal/_sigrtcsave.c: RTC の周波数が signal 呼び出し後に
+	変化してしまう問題があった。が、RTC のレジスタが write-only な
+	ので根本的には解決できない問題である。とりあえず 1Hz に戻すよ
+	うに変更した。
+
+Wed 08 Sep 00:39:21 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/access.c: F_OK チェック以外の場合、ファイルが存在
+	しないなど、エラーが発生しても結果が 0 (YES) となっていた。エ
+	ラーが発生した場合は -1 (NO) となるように修正した。
+
+	* src/profile/_fncprof.c: 関数プロファイルをとった場合、各関数
+	の実行時間が 1/100 になってしまっていた。これを修正。
+
+	* src/profile/_blkprof.c, src/profile/_fncprof.c: プロファイル
+	ライブラリ内部で stdio による出力を行わず、DOS コールの print
+	で処理するように変更した。
+
+	* src/stdio/setvbuf.c: setvbuf() でバッファに NULL ポインタを
+	渡し、領域を自動割り当てにした場合、fclose() してもそのバッファ
+	が解放されないバグを修正した。
+
+Wed 08 Sep 00:08:14 1993  Keiji Ohnishi  (tokyo)
+
+	* include/dirent.h, src/dirent/opendir.c: readdir() で得られる
+	struct dirent の内容にいくつかの情報を追加した。
+
+	* src/sys_doseml/d_readlink.c: シンボリックリンクのリンクファ
+	イルにおいて、内容（つまりリンク先の記述内容）の終わりが CR で
+	なかった場合、戻り値の計算を誤る場合があった。これを修正。
+
+Mon 06 Sep 22:26:46 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/qsort.s: TomY さんからの contribution を受け、ア
+	センブラバージョンのより高速なクイックソートが利用できるように
+	なった。
+
+Sun 05 Sep 20:47:13 1993  Keiichirou Murakami  (disneyland)
+
+	* src/string/strins.s: 長さ 0 の文字列（空文字列）を与えるとバ
+	スエラーになるバグを修正した。
+
+Sat 04 Sep 22:03:45 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_md2u.c: Human68k のリードオンリービットが拡張
+	UNIX モードへの変換途中に失われる。これを修正し、正しく拡張ビッ
+	トがセットされるようにした。
+
+Mon 30 Aug 21:30:44 1993  Keiichirou Murakami  (disneyland)
+
+	* src/dirent/closedir.c: closedir() の戻り値が void になってい
+	たのを POSIX.1 に正しく準拠するように int に変更した。
+
+	* src/stdio/_doprnt.c: %g フォーマットでの精度および最大フィー
+	ルド長の処理に若干おかしい部分があり、場合によって正しい結果と
+	ならない場合があったのを修正。
+
+Thu 26 Aug 23:19:06 1993  Keiichirou Murakami  (disneyland)
+
+	* include/stdlib.h, src/stdlib/rand48.c: drand48(), erand48(),
+	jrand48(), lrand48(), mrand48(), nrand48(), seed48(),
+	srand48(), lcong48() を大野(oo)さんからいただき、リリースに含
+	めた。
+
+	* src/stdlib/strtol.c, src/stdlib/strtoul.c: 基数として 1 を指
+	定できていたのを修正し、基数 1 はエラーとしてはじくようにした。
+
+	* src/strbpl.s, src/strsrt.c: strsrt() ではポインタの解釈の誤
+	りを修正し、 strbpl() ではバグ修正を行った。
+
+Sun 22 Aug 21:24:49 1993  Keiichirou Murakami  (disneyland)
+
+	* src/signal/_intrtc.s: 内部で _sigsetcnt() している部分で、関
+	数に渡す引き数の数が誤っていたのを修正した。
+
+	* src/stdio/_sread.c: getc() および putc() マクロによってファ
+	イル入出力を行うと、場合によってシークが失敗する状況になること
+	があった。これを修正した。
+
+Thu 19 Aug 22:13:31 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/free.c: free() に NULL ポインタを与えた場合にバス
+	エラーなどのエラーとならず、何も副作用を起こさないように (ANSI
+	仕様) 修正した。
+
+	* include/string.h: movmem() のマクロが引き数を使っているにも
+	関わらずマクロプロトタイプ部に引き数指定がなかった。これを修正。
+
+Tue 17 Aug 02:30:00 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.28 Release Ariel としてリリース
+
+Mon 16 Aug 21:09:02 1993  Keiichirou Murakami  (disneyland)
+
+	* stdlib/_splitpath.c: ファイル名として '.' や '..' を与えた場
+	合に正しくノード名の部分に格納されるように修正。
+
+	* include/sys/dos.h, include/stdlib.h: _MAX_PATH, _MAX_EXTなど、
+	MS-C 7.0 の _splitpath() で必要な諸定数をsys/dos.hからstdlib.h
+	に移動した。また名称の変更をした。
+
+	* include/string.h, src/string/stcgfe.s, src/string/stcgfn.s,
+	src/string/strmfe.s, src/string/strmfn.c, src/string/strmfp.s,
+	src/string/swmem.s, src/string/repmem.s, src/string/strbpl.s,
+	src/string/strsrt.s, src/string/strins.s,
+	src/string/memicmp.s: XC で作成されたプログラムとの互換性を高
+	めるために新たに XC only の string, buffer 操作命令をいくつか
+	追加した。これまでに存在したものでも assembler バージョンに置
+	き換えたものがある。いずれもテストは十分に行っていないので注意。
+
+Thu 12 Aug 01:14:34 1993  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_stacksiz.s, src/startup/_heapsiz.s: デフォルト
+	のスタックサイズ及びヒープサイズをシンボル _STACK_SIZE 及び
+	_HEAP_SIZE から設定するようにした。これは XC との互換性を高め
+	るためであり、gcc のコマンドラインオプションから設定可能にする
+	ためでもある。
+
+Wed 11 Aug 01:14:57 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_open.c: 標準入力に対する isatty() の処理が誤って
+	いたのでこれを修正した。
+
+	* src/stdio/_doscan.c: scanf() で "%[A-Z]" のような範囲指定に
+	よるマッチパターン文字列を指定できるように拡張した。
+
+Tue 10 Aug 00:33:41 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/write.c: write() でディスクフルになった時に、最初
+	は実際に書き込めたバイト数を返すように(途中まで書き込めたはず)
+	し、その後の呼び出しでエラーを返すように修正した。
+
+	* src/glob/_sysroot.c: _sysroot() で環境変数 SYSROOT と指定し
+	たパス名が PATH_MAX を越えるような指定をした場合のエラーチェッ
+	クを修正した。
+
+	* src/stdlib/putenv.c: putenv() で文字列に "name=" とした時に
+	環境変数を削除することになっているが実際にはそうなっていなかっ
+	た。これを修正。また、'=' の文字は最初に見つかったものを採用す
+	るように変更(従来は最後)。
+
+	* src/stdio/fflush.c, src/stdio/clearerr.c, src/stdio/fseek.c,
+	src/stdio/rewind.c: clearerr(), fseek() および rewind() した時
+	に EOF が正しく解除されるように (この場合下層レイヤ unistd の
+	TEXTEOF ^Z のフラグを指す) 修正した。
+
+Mon 09 Aug 01:15:08 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat, src/sys_doseml, src/dirent: 多重に mount され
+	た仮想ディレクトリ/仮想ドライブに対応し、不用意に assign が解
+	除されることがないようにした。また、lndrv の問題を回避するよう
+	に C I/F から assembler I/F に呼び出しを変更 (また仮想ディレク
+	トリの元ドライブに対するアクセスが可能になった)。最後に、
+	stat() にワイルドカードを渡した場合のエラー処理の方式を変更し
+	た。
+
+	* src/stdlib/_path.c: stat() の変更にともない、これまで一重ま
+	でしかパスを展開していなかったのをプリミティブなパス名になるま
+	で全て展開するように変更した。
+
+Mon 09 Aug 00:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* global: この 10 何日の間にいくつかの (もしかしたらしていない
+	かもしれないが...) 修正を行ったが記憶の領域から消えてしまった
+	部分がいくつかある。残念ながら思い出せないので割愛する。
+
+Tue 27 Jul 01:28:03 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_doscan.c: '[' と ']' で囲んだ文字集合による読み込
+	み書式を指定した場合、 1 文字もマッチしなかった場合にも正常に
+	読み込んだとみなしていた。これを修正し、 1 文字もマッチしなかっ
+	た場合は中断するようにした。
+
+Fri 23 Jul 21:43:50 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos.h, include/sys/dos_i.h, include/sys/xstat.h:
+	ファイル中に含まれる id という識別子が Objective-C の予約語で
+	あるために正しく処理できない問題があった。これを別の名前に変え
+	た。このため、一部の構造体では XC との互換性に問題がでるように
+	なったが、それは小事であろう。
+
+	* include/sys/dos_i.h: また、ファイル中に含まれる new という識
+	別子が C++ の予約語なのでこれまた使用上問題があった。これも同
+	様に修正した。
+
+	* src/unistd/close.c: 書き込み禁止のメディア上で close() を発
+	行した場合、書き込みエラーがでてしまうバグがあった。これを修正
+	した。
+
+Thu 22 Jul 00:40:27 1993  Keiichirou Murakami  (disneyland)
+
+	* src/conio/getch.c: getch() でブレークチェックをしないように、
+	入力の方式を _dos_inkey() に変更した。
+
+Tue 20 Jul 02:46:57 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/mbtowc.c: mbtowc() で半角かなおよび 2 バイト文字
+	を幅広文字に変換する場合にデータが正しく変換されないバグヲ修正
+	した。
+
+Sun 18 Jul 21:35:40 1993  Keiichirou Murakami  (disneyland)
+
+	* src/string/strsfn.c: strsfn() で分解した拡張子データの先頭に
+	'.' が含まれていた。_splitpath() とは異なる仕様であることを確
+	認し、修正した。
+
+	* include/jstring.h, src/mbstring/mbsrev.c: mbsrev() およびそ
+	の別名定義である jstrrev() を新たに追加した。
+
+	* src/stdlib/system.c: ソースの簡略化のために一部書き換えたが、
+	仕様には変更なし。
+
+	* include/sys/xstart.h, src/startup/_enargv.c,
+	src/startup/_dehupair.c: プログラムが HUPAIR エンコードされた
+	呼び出し形式で起動された場合は、argv[0] をプロセス管理ポインタ
+	からではなく、HUPAIR コマンドラインを用いて構成するように変更。
+
+	* src/unistd/read.c: テキストモードで CR を全て取り除くことに
+	よって CRLF->LF 変換を行っていたが、新しいアルゴリズムに変更し、
+	CR,LF のシーケンスのみ LF に変更するように再度戻した。
+
+Sat 10 Jul 16:17:39 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/qsort.c: 中間値をデータ交換に関係なく参照するため
+	に別バッファに保存して参照していたが、比較関数のなかには与えら
+	れたポインタの大小をも見るものがあり (ex. sed-1.18-mb1.00)、こ
+	の仕様では正しく動作しなかった。中間値へのポインタをデータ交換
+	に合わせて追従させるようにし、常に与えられた配列の範囲内をポイ
+	ントするように変更した。
+
+Fri  9 Jul 02:00:15 1993  Keiichirou Murakami  (disneyland)
+
+	* src/string/strrev.s: 文字列の長さ計算およびループ回数の計算
+	ミスによって正しく動かなくなっていた。これを修正した。
+
+Thu  7 Jul 23:40:41 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/read.c: テキストモードでオープンしたファイルに対
+	し、read() で 1 バイト読み込もうとした場合、それがたまたま CR
+	コードだと削除されてしまうために 0 バイト (EOF) と取り違えてし
+	まうことがあった。CRLF 変換で 0 バイトになってしまった場合は最
+	低 1 バイト読み直す処理を追加してこれを回避した。こういった細
+	かい仕様は XC にしろ MS-C にしろマニュアルを見ても書かれていな
+	いので、処理的に見て妥当な線で妥協することにする。XC のように
+	CRLF 変換のために足りなくなったバイト数を読み直すループを回し
+	てもいいが、それだと相対的に _dos_read() する回数が増加するた
+	めに I/O が遅くなる可能性がある。読み直しは上記のように例外的
+	に行うのが妥当だろう。
+
+Fri  3 Jul 22:42:45 1993  Keiichirou Murakami  (disneyland)
+
+	* include/string.h, src/string/stcgfe.c, src/string/stcgfn.c,
+	src/string/strmfe.c, src/string/strmfn.c, src/string/strmfp.c,
+	src/string/swmem.s, src/string/repmem.s, src/stdlib/atow.s: XC
+	で作成されたプログラムとの互換性を高めるために新たに XC only 
+	の string, buffer 命令 stcgfe(), stcgfn(), strmfe(), strmfn(),
+	strmfp(), swmem(), repmem(), atow() を追加した (ただしテストし
+	ていない)。
+
+	* include/string.h, include/stdlib.h, XC で作成されたプログラ
+	ムとの互換性を高めるために XC only の buffer 操作命令である
+	movedata(), movmem(), setmem(), uitoa() をそれぞれ同じ動作をす
+	る既存の関数にマッピングした。
+
+	* src/glob/_dellsep.c: ルートディレクトリを表す文字列 "/" や
+	"\" に対して _dellastsep() を行うと空文字列 "" になってしまう
+	バグを修正した。
+
+	* src/argvz: 今は argv[0] を UNIX like にファイル名だけにして
+	いるが、これを MS-C,XC 互換のためにフルパスとするためのライブ
+	ラリ libargvz.a を新たに提供した。
+
+Fri  3 Jul 19:46:41 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/setmode.c: 元の設定と異なる設定、例えばバイナリモー
+	ドだった場合に O_TEXT を設定すると O_BINARY | O_TEXT になって
+	しまうバグを修正した。
+
+	* include/fcntl.h, src/fcntl/fcntl.c: ファイルステータスモード
+	のマスク値に足りない値 (O_TEXT と O_BINARY) があったので、これ
+	を追加した。さもなくば正しくテキスト/バイナリモードのフラグを
+	fcntl() のコマンド F_GETFL で求められない。
+
+	* src/stdio/fdopen.c: 元がテキストモードあるいはバイナリモード
+	のファイルに対してそれと異なるオープンモードを指定した場合に正
+	しく切り替える処理が抜けていた。これを追加して修正した。
+
+Fri  2 Jul 22:23:40 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_scsi: IOCS コールで使用されている (破壊される予定の)
+	d3, d4, d5 レジスタを正しく退避し忘れていた。これを修正した。
+
+	* include/stdlib.h: 以前ミスによって atoi() のプロトタイプがコ
+	メントアウトされていたのを修正した。
+
+Fri  2 Jul 22:19:20 1993  Keiichirou Murakami  (disneyland)
+
+	* include/iocscall.mac: dis した時に IOCS のマクロが SCSI のマ
+	クロになってしまう問題を回避するため、IOCS のマクロを最後にま
+	わした。
+
+Fri  2 Jul 01:39:04 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/iocs_p.h: _iocs_txyline() のプロトタイプ宣言が抜
+	けていたのでこれを追加した。
+
+Mon 28 Jun 00:35:56 1993  Keiichirou Murakami  (disneyland)
+
+	* include/mbctype.h: ismbcsymbol() および ismbckata() のマクロ
+	をより高速で簡便な判断文に変更した。
+
+	* include/iocs_i.h: _iocs_akconv() において、インラインアセン
+	ブラの記述ミスによりアセンブルできないコードを出力していた。こ
+	れを修正した。
+
+Sat 26 Jun 16:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.27 Release Mrs.Pott としてリリース

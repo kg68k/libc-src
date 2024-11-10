@@ -1,0 +1,71 @@
+#!/bin/sh
+#
+# -*-Fundamental-*-
+#
+# PROJECT C Library, X68000 PROGRAMMING INTERFACE DEFINITION
+# --------------------------------------------------------------------
+# This file is written by the Project C Library Group,  and completely
+# in public domain. You can freely use, copy, modify, and redistribute
+# the whole contents, without this notice.
+# --------------------------------------------------------------------
+# $Id: mathcc,v 1.7 1994/11/26 14:53:46 mura Exp $
+#
+
+tmpdir=`echo $temp | $SED -e 's/\\\\/\//g' -e 's/\/$//g'`
+tmp1=$tmpdir/tmp.1
+tmp2=$tmpdir/tmp.2
+tmp3=$tmpdir/tmp.3
+tmp4=$tmpdir/tmp.4
+tmpc=$tmpdir/tmp.c
+tmps=$tmpdir/tmp.s
+tmpt=$tmpdir/tmp.t
+tmpx=$tmpdir/tmp.x
+
+recover () {
+  if [ $? -gt 0 ]; then
+    $RM $tmpc $tmps
+    $RM $tmp1 $tmp2 $tmp3 $tmp4 $tmpt $tmpx
+    echo $1
+    exit 1
+  fi
+}
+
+if [ $# != 3 ]; then
+  echo "usage: $0 CFLAGS foo.cp foo.o"
+  exit 1
+fi
+
+if [ ! -f $2 ]; then
+  echo "$0: $2 does not exist"
+  exit 1
+fi
+
+$CP -f $2 $tmpc
+recover "compilation failed in $CP"
+
+$CC $1 -S $tmpc -o $tmps
+recover "compilation failed in $CC"
+
+$AWK -f _split.awk tmp1=$tmp1 tmp2=$tmp2 tmp3=$tmp3 < $tmps
+recover "compilation failed in $AWK"
+
+$SED -e 's/_fpu_/_f_/g' -e 's/\?/\?_/g' < $tmp2 > $tmp4
+recover "compilation failed in $SED"
+
+$FPPPCMD -T -Q -S -o $tmps $tmp2
+recover "compilation failed in $FPPPCMD"
+
+$AWK -f _optim.awk $tmps > $tmp2
+recover "compilation failed in $AWK"
+
+$CAT $tmp1 $tmp4 $tmp2 $tmp3 > $tmps
+recover "compilation failed in $CAT"
+
+$RM $tmp1 $tmp2 $tmp3 $tmp4 $tmpc $tmpt $tmpx
+recover "compilation failed in $RM"
+
+$AS -u -w -z -n -o $3 $tmps
+recover "compilation failed in $AS"
+
+$RM $tmps
+recover "compilation failed in $RM"

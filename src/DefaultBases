@@ -1,0 +1,57 @@
+# -*-Fundamental-*-
+#
+# PROJECT C Library, X68000 PROGRAMMING INTERFACE DEFINITION
+# --------------------------------------------------------------------
+# This file is written by the Project C Library Group,  and completely
+# in public domain. You can freely use, copy, modify, and redistribute
+# the whole contents, without this notice.
+# --------------------------------------------------------------------
+# $Id: DefaultBases,v 1.12 1994/11/26 14:50:09 mura Exp $
+#
+
+#
+# ※ 自分の使用しているコマンド名に合わせて調整して下さい。ただし、異な
+# る機能のコマンドは割り当てないように注意して下さい。ただし、最適化オプ
+# ションは変更しないようお願いします。
+#
+
+              AR = har
+              AS = has
+              CC = gcc
+              LD = gcc
+           SHELL = sh
+             AWK = awk
+             SED = sed
+              RM = rm -f
+              MV = mv -f
+              CP = cp
+         FPPPCMD = fppp
+             CAT = cat
+
+   WARNING_FLAGS = -Wall
+  OPTIMIZE_FLAGS = -O -fomit-frame-pointer -fstrength-reduce -fcombine-regs
+         ARFLAGS = -uv
+         ASFLAGS = -w -z -i ../../include $(SXAS_FLAGS)
+             HAS = -z -w
+            FPPP = TQS
+
+#
+# ※ また、次の GCC_OPTION および MARIKO/真里子 は変更しないで下さい。正
+# しくコンパイルできない原因となります。
+#
+
+      GCC_OPTION = GOW
+          MARIKO = AB
+          真里子 = AB
+
+#
+# ※ 以下の定義によって標準のインクルードパスおよびライブラリパスを無
+# 効にしています。これらの定義を変更しないで下さい。
+#
+
+          include= ../../include
+              lib= ../../lib
+
+#
+# END OF FILE
+#

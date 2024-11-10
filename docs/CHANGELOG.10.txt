@@ -1,0 +1,808 @@
+Sat 26 Jun 16:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.27 Release Mrs.Pott としてリリース
+
+Fri 25 Jun 22:13:01 1993  Keiichirou Murakami  (disneyland)
+
+	* src/math/*.c, src/math/*.d: ファイルの中から不要な ifdef を
+	外したり、簡略化を行った。
+
+	* src/math/mathcc, src/math/_optim.awk, src/math/_split.awk: 
+	全体的に簡略化し、コンパイルしやすくした。また、 awk ファイル
+	なども修正した。
+
+	* src/sys_stat/_stat.c, src/sys_doseml/d_readlink.c,
+	src/sys_doseml/d_lfiles.c: lndrv の C インタフェースを使う方式
+	に全て統一して、従来の古いインターフェースのコードを全て削除し
+	た。したがって、lndrv はある程度最新のものである必要がある。
+
+Wed 23 Jun 00:09:17 1993  Keiichirou Murakami  (disneyland)
+
+	* include/dirent.h, src/dirent/opendir.c: struct dirent の構造
+	体に新たに d_namlen と d_reclen のメンバを追加した。これは他の
+	処理系との互換性を高めるためである
+
+Tue 22 Jun 19:23:10 1993  Keiichirou Murakami  (disneyland)
+
+	* src/conio/cgets.c: cgets() の戻り値が &buffer[0] になってい
+	たが、正しくは &buffer[2] であった。これを fix (Thanks to
+	Mr. keisuke@aa.cs.keio.ac.jp)
+
+	* src/startup/_start.c, src/startup/_vars.c: これまで _start()
+	と一緒にいくつかの重要なグローバル変数を宣言していたが、これら
+	の変数を必要とするルーチンを利用すると、必然的に _start が組み
+	込まれ、リンク時に main() を要求してしまう。これではあるルーチ
+	ンだけを必要とするような場合に問題がある。したがって、これらの
+	変数定義を別ファイルにした
+
+	* src/stdio/_doscan.c: scan を行う際の format 文字列に漢字が含
+	まれていると正しく読み込みデータとマッチしないバグ (signed <->
+	unsigned の違いによる) があった。これを fix し、漢字も正しくマッ
+	チするように fix (Thanks to Mr.谷岡)
+
+	* include/limits.h: _POSIX_NAME_MAX の値が 21 になっていたが、
+	"." を含めると全部で 22 文字あることになる。この暗黙の 1 文字
+	を失念していたため、22 文字フルに必要なファイルに出会うといく
+	つかの関数で不具合が生じていた。これを fix し、NAME_MAX を 22
+	とした (Thanks to 中村ちゃぷに)
+
+	* src/sys_dos/c_cls_al.s: CONCTRL に渡す引き数の値が誤っていた
+	ため正しく動作しなかった。これを fix (Thanks to DON)
+
+	* src/mbctype/ismbckata.c, src/mbctype/ismbcsymbol.c,
+	include/mbctype.h: マルチバイト文字関数である ismbckata() およ
+	び ismbcsymbol() で下位バイトが 0x7f であるものを含めていた。
+	これを含まないように fix (Thanks to WILLs)
+
+	* src/mbctype/mbctokata.c, src/mbctype/mbctohira.c: マルチバイ
+	ト文字関数である mbctokata() と mbctohira() の文字コード変換ア
+	ルゴリズムが誤っていた。これを fix (Thanks to Yoz.)
+
+	* src/sys_stat/_stat.c: stat() に対して "*.*" のようなファイル
+	名を渡すと実際に存在しないにもかかわらずワイルドカードとして作
+	用してしまい、なんらかの値を返してしまっていた。これを fix
+	(Thanks to sa2c)
+
+Tue 14 Jun 04:30:02 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/read.c: O_TEXT でオープンされたファイルで read() 
+	が CRLF->LF 変換を行うアルゴリズムを変更。従来のように CRLF の
+	2 バイトシーケンスを LF に変換する方法では CR,LF の間でデータ
+	が切れた場合の処理が現実的にやりにくいので、単に CR を全て消去
+	する方法 (XC と同じ) に変更した
+
+Tue 14 Jun 03:20:57 1993  Keiji Ohnishi  (tokyo)
+
+	* include/sys/xstdlib.h, src/stdlib/atof.s: atof() や strtod()
+	が d3 レジスタを破壊してしまうバグがあった。FLOAT 呼び出しが 
+	d3 レジスタを破壊することを忘れていたため。これを fix (Thanks
+	to Mr.阿久津)
+
+Fri 11 Jun 23:49:15 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/xsignal.h, src/stdlib/abort.c,
+	src/startup/exit.c, src/startup/_exit.c, src/signal/_sigdfl.c,
+	src/signal/_siginit.c: C++ においてグローバルデストラクタを
+	_exitsub で呼び出していたが、これを exit での呼び出しに変更し
+	た。これにともない、exit と _exit の役割を見直し、 _exitsub を
+	廃止し、_exit に統一
+
+	* src/signal/_intex2.s, src/startup/_exitsub.c: 上記の変更によ
+	り、 2 つのファイルを削除した。_exitsub は _exit あるいは exit
+	に吸収。_intex2 は _dos_exit2 ベクタの飛び先変更により廃止
+
+Wed  9 Jun 11:43:12 1993  Keiichirou Murakami  (disneyland)
+
+	* include/cdecl.h: C++ での extern "C" {} 宣言の方法を少し変え
+	て、より簡便になるようにした
+
+Mon  7 Jun 23:21:20 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_stat.c, src/sys_stat/_getinode.c,
+	src/sys_stat/fstat.c: mount された仮想ディレクトリ上のセクタを
+	物理リードすることができないので FATCHK を呼んでいたが、それで
+	は遅くなるので一旦 ASSIGN を外してから DISKRED する方法に変更
+	した。また、ドライブを入れ換えた場合に st_dev, st_rdev が正し
+	い (正しくアクセスできる値) 値になるように変更した
+
+	* src/sys_stat/_stat.c, src/sys_stat/_getinode.c: S_IEXEC フラ
+	グを判定するのにファイルの拡張子を参考にするが、このファイル拡
+	張子の参考例から ".Z" を消した。現実問題として、.Z などという
+	実行ファイルはほとんどなく、もっぱら compress ファイルであるこ
+	との方がおおいからである
+
+Sun  6 Jun 21:20:04 1993  Keiichirou Murakami  (disneyland)
+
+	* global: 差分ではやりにくいようなファイルの移動、リネーム、
+	Makefile の修正など構造上の変更を色々と行った
+
+Sun  6 Jun 14:39:05 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/_getdriveno.c: TomY さんの要望により関数の処理ア
+	ルゴリズムを変更した (Thanks to TomY)
+
+	* doc/USAGE_*.doc: 関数の仕様概要をまとめたドキュメントを作成
+	し、これらを doc ディレクトリに追加した
+
+Tue  2 Jun 00:55:39 1993  Keiichirou Murakami  (disneyland)
+
+	* src/math/mathcc: $temp の最後に "/" がある場合はそれを取り除
+	くように変更した
+
+Tue  1 Jun 23:00:31 1993  Keiichirou Murakami  (disneyland)
+
+	* src/ctype/_ctype.c: isblank() に適合する文字として、従来は
+	0x20 (SPC) だけだったが、これに 0x09 (TAB) を加えるようにした。
+	isblank() の仕様についてはいずれの資料も明確にしていないのであ
+	いまいであるが、SPC だけか、あるいは SPC と TAB の 2 つが一般
+	的なようである
+
+Tue  1 Jun 08:46:08 1993  Keiichirou Murakami  (disneyland)
+
+	* include/jstring.h: jtoupr() に対するエイリアスが mbslwr() に
+	なっていたので意図する動作と逆になっていた。これを mbsupr() に
+	fix (Thanks to Arctan_X)
+
+	* include/iocs_i.h: インライン関数の _iocs_txyline() が抜けて
+	いたので新たに iocs_i.h に追加した (Thanks to Arctan_X)
+
+Tue  1 Jun 00:55:52 1993  Keiichirou Murakami  (disneyland)
+
+	* src/dirent/readdir.c: ディレクトリストリームの終端に達した場
+	合、readdir() は NULL を返すが、その時に errno に ENOENT を設
+	定していた。本来は NULL を返すが errno は変化してはならない。
+	これを fix
+
+Mon 31 May 22:10:41 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_stat.c: mount された仮想ディレクトリ上で、関数
+	stat() あるいは lstat() でファイルを調査した時に正しく i-node
+	(メンバ st_ino) が求められない場合があった。これを fix し、正
+	しく i-node が求められるようにした
+
+Sun 30 May 15:46:52 1993  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_enargv.c: argv[0] に実行プログラムのフルパスを
+	格納していたが、今回からファイル名だけに変更した
+
+	* include/ftw.h, src/ftw, src/Makefile: TomY さんから新たに
+	contribution を受け、 ftw() を新たに提供するようにした。他の処
+	理系での ftw() の実装を試していないので正しく実装されているか
+	どうかはまだわからない (Thanks to TomY)
+
+Sun 30 May 12:55:03 1993  Keiichirou Murakami  (disneyland)
+
+	* include/audio.h, src/audio, src/Makefile: AOI さんからの
+	contribution を受け、 libbas.a を新たに作成した。とりあえず、
+	audio.h とその関数を追加 (Thanks to AOI)
+
+	* src/startup/_enhupair.c, src/startup/_enhupair.s,
+	src/startup/EncHUPAIR.s: これまで EncHUPAIR.s に著作権が保持さ
+	れていたが、 sa2c さんがこれに代わる Public Domain なエンコー
+	ダである _enhupair.c を書いてくれた。関数をこれに差し替え、そ
+	れにより _enhupair.s および EncHUPAIR.s は不要になったので削除
+	した (Thanks to sa2c)
+
+	* src/sys_scsi/*.s, include/doscall.mac, include/iocscall.mac:
+	scsi コールに関するデータを doscall.mac から iocscall.mac に移
+	動した。良く考えてみれば iocscall の拡張である (Thanks to
+	TomY)
+
+Sun 30 May 02:24:46 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: _dos_fatchk2(), _dos_diskred2(),
+	_dos_diskwrt2() のインライン関数の記述ミス (制約文字のミス) で
+	コンパイルできないコードを吐くことがあった。これを fix (Thanks
+	to TomY)
+
+Sat 29 May 19:50:27 1993  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_dehupair.c, src/startup/_dehupair.s,
+	src/startup/DecHUPAIR.s: これまで DecHUPAIR.s に著作権が保持さ
+	れていたが、 sa2c さんがこれに代わる Public Domain なパーサで
+	ある _dehupair.c を書いてくれた。関数をこれに差し替え、それに
+	より _dehupair.s および DecHUPAIR.s は不要になったので削除した
+	(Thanks to sa2c)
+
+Sat 29 May 11:47:44 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_doscan.c: %c および %s で、何も読み込まないうちに
+	EOF に達すると、空文字列を格納して読み込み成功となっていた。こ
+	れを修正し、空文字ならばそのフィールドをエラーとするように fix
+	(Thanks to RUPA)
+
+	* src/stdio/_sread.c: src/stdio/sscanf.c: sscanf()で、疑似スト
+	リームの長さの設定を誤っていた点を fix。また、疑似ストリームに
+	対しては _cnt が 0 になった時点で EOF になるように _sread() を
+	fix した。以前は与えた文字列の長さを越えて、format を満足させ
+	るまで scan が行われていた (Thanks to RUPA)
+
+Fri 28 May 00:31:40 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/popen.c, src/stdio/pclose.c, include/sys/xstdio.h:
+	UNIX ソースとの互換性を高めるために新たに stdio 関数である
+	popen() および pclose() を追加した
+
+Thu 27 May 23:46:56 1993  Keiichirou Murakami  (disneyland)
+
+	* include/dos_p.h, include/dos_i.h, src/sys_dos/gets.s,
+	src/sys_dos/cinsns.s, src/sys_dos/coutsns.s: _dos_cinsns() と
+	_dos_gets() のインライン関数の記述ミスを fix。また、関数版の
+	_dos_cinsns(), _dos_gets() にも同様のミスがあったのでそちらも
+	fix。_dos_coutsns()が、関数版、インライン版ともに欠けていたの
+	で追加した (Thanks to WILLs)
+
+	* src/conio/cgets.c: 上の _dos_gets() のミスのせいで cgets() 
+	が正しく動作しなくなっていた。これを再コンパイルすることで障害
+	を fix (Thanks to Mr. keisuke@aa.cs.keio.ac.jp)
+
+	* include/iocs_i.h: インライン関数である _iocs_b_print(),
+	_iocs_paint(), _iocs_point() で関数名が誤っていたので正常にリ
+	ンクされないことがあった。これを fix (Thanks to WILLs)
+
+Thu 27 May 02:32:50 1993  Keiichirou Murakami  (disneyland)
+
+	* src/string/strnicmp.s: BSD ソースとの互換性を高めるために、
+	新たに関数 strnicmp() および、その別名定義である strncasecmp()
+	を追加した
+
+	* src/glob/_dellsep.c: "～ヤ\" という様なパターンにおいて正し
+	く最後のパス区切り記号を削除できないことがあった。アルゴリズム
+	を変更し、正しく区切り記号を削除できるように fix (Thanks to 
+	sa2c)
+
+Wed 26 May 21:29:20 1993  Keiichirou Murakami  (disneyland)
+
+	* include/dirent.h, include/signal.h: BSD ソースとの互換性を高
+	めるためにいくつかのマクロ定義などを見直し、追加、修正した
+
+	* include/ctype.h, include/mbctype.h, include/wctype.h,
+	src/ctype/*.c, src/mbctype/*.c, src/wctype/*.c: 引き数を int 
+	型に変換してからテーブル参照していたが、それだと問題があるので
+	unsigned char 型に変換するように変更した。また、C ソース上から
+	不要なキャストを削除し、正しく 0～255 の範囲でテーブルにアクセ
+	スするように修正した
+
+	* src/string/stricmp.s: 文字の比較は小文字に変換した上で行うよ
+	うに変更した。以前は大文字に変換した上で比較していた。どちらも
+	変わりはないが...
+
+	* include/string.h: BSD のソースとの互換性を高めるため、新しい
+	関数として stricmp() に対する別名定義をもって strcasecmp() を
+	追加した
+
+Tue 25 May 21:09:59 1993  Keiichirou Murakami  (disneyland)
+
+	* src/signal/_sigdfl.c: コアダンプするまえに _exitsub() が呼び
+	出されていたのでコアイメージを解析してもファイルの情報が取得で
+	きない。そこで _exitsub() をコアダンプルーチンの後ろに回した
+
+	* src/stdio/_doscan.c: フィールドの読み込み途中で EOF に出会う
+	と、エラーとなってしまい、EOF がフィールド区切りとして機能して
+	いなかった。正しくフィールド区切りとして認識し、認識できる部分
+	はちゃんと取り出すように fix (Thanks to Mr. 谷岡)
+
+Tue 25 May 04:31:10 1993  Keiichirou Murakami  (disneyland)
+
+	* src/DefaultBases, utils/crash/Makefile: Makefile の不備と、
+	想定している環境以外でのコンパイルもできるように若干の修正を施
+	した (Thanks to WILLs)
+
+Mon 24 May 21:30:19 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dir.h: 古いタイプの構造体 (古いというよりも BSD
+	タイプ) direct を dirent の別名として定義するようにした。これ
+	は BSD ソースとの互換性を高めるためである。構造体の中身は異な
+	るが、さして問題にはならないと思う...が (Thanks to 沖＠沖)
+
+	* include/sys/file.h: 古い BSD ソースとの互換性を高めるために
+	sys/file.h に L_SET L_INCR L_XTND の各マクロを定義した (Thanks
+	to 沖＠沖)
+
+	* src/unistd/getwd.c: BSD (System Vだったかも) ソースとの互換
+	性を高めるために新しく getwd() を追加した。機能としては 
+	getcwd() と同じだが、引き数が異なっている (Thanks to 沖＠沖)
+
+	* src/stdlib/setenv.c, src/stdlib/unsetenv.c: BSD ソースとの互
+	換性を高めるために setenv() と unsetenv() を新たに追加した。こ
+	れらは putenv() と異なるインタフェースを持っている (実際は
+	putenv() を呼び出すだけである) (Thanks to 沖＠沖)
+
+	* src/signal/sigsetmask.c: BSD ソースとの互換性を高めるために
+	sigsetmask() インターフェースを新たに追加した。これは sigset_t
+	ではなく int をマスク値と使っている点で sigblock() 同様に古く
+	さいインターフェースである。なるべく使わない方が良い。(Thanks
+	to 沖＠沖)
+
+	* src/signal/sigblock.c: sigblock() の引き数の仕様が誤っていた
+	(引き数は int sig ではなく、マスク値 int mask だった) ので、不
+	正な値がマスク値に設定されることがあった。これを fix
+
+Sun 23 May 20:37:25 1993  Keiichirou Murakami  (disneyland)
+
+	* src/interrupt/intlevel.s: ちょっとした修正。関数の動作は変更
+	されていない
+
+Sun 23 May 20:26:16 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.0.26 Release Cogsworth としてリリース
+
+Sun 23 May 17:10:41 1993  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_stack.s, src/signal/_interr.s,
+	src/signal/_intrtc.s, src/signal/siglongjmp.s: DOS コール番号
+	を直接記述していた部分を doscall.mac を使ってマクロに書き直し
+	た
+
+	* src/prof/_blkprof.c, src/prof/_fncprof.c,
+	src/startup/_vector.c, src/startup/_stack.s,
+	src/startup/_start.c, src/signal/_sigdfl.c,
+	src/signal/_intabt.s, src/sys_wait/wait.c, include/sys/wait.h:
+	プロセスの終了コードについて sys/wait.h に共用体 wait を作成し
+	た。また、ライブラリ中に分散していた終了コードでその共用体を用
+	いるように変更した。これにより、libc を用いるプログラム同士な
+	らば WIFEXITED や WTERMSIG などのマクロが使用できるようになる。
+	以前のバージョンとはライブラリの内部エラーやシグナル終了時のエ
+	ラーコードが異なっているので注意
+
+Sun 23 May 15:14:50 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/close.c: S_IREAD でオープンしたファイルをオープン
+	中に chmod +w してから、unlink すると、 unlink が成功するにも
+	かかわらず close 時に削除できなくてファイルが残ってしまう不具
+	合 (外道 Human68k の仕様による) があった。正しく処理できるよう
+	に回避 (Thanks to homy)
+
+Sat 22 May 02:01:36 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/types.h: FD_CLR などのマクロに誤りがあり、正しく
+	コンパイルできない。これを fix (Thanks to 沖＠沖)
+
+Fri 21 May 21:53:04 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/chdrive.c: chdrive() のドライブ番号の計算式で '+'
+	と '-' を間違えていた。このため指定したドライブと異なるドライ
+	ブにカレントドライブが移動してしまう。これを fix (Thanks to
+	AOI)
+
+Thu 20 May 00:50:12 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: _dos_c_cls_al() および _dos_c_print()
+	のインライン関数の不備を fix (Thanks to Mr. 石浦)
+
+Wed 19 May 23:18:37 1993  Keiichirou Murakami  (disneyland)
+
+	* HOWTOCOMPILE, FAQ, BUGREPORT: コンパイル方法に関して追記。ま
+	た、注意事項やバグレポートに関する情報を FAQ, BUGREPORT という
+	ファイルにまとめた
+
+	* include/jstring.h: CT_ANK などに対する別名定義が間違っていた。
+	そのため正しくコンパイルできないことがあった。これを fix
+	(Thanks to MiNEX)
+
+	* src/DefaultBases, src/DefaultRules: 再コンパイルに関して注意
+	書きを書き加えた。また、 src/math/mathcc の改善に関していくつ
+	かの定義を追加した。
+
+	* src/unistd/getcwd.c, src/unistd/getdcwd.c: 結果を格納する領
+	域を指すポインタが NULL だった場合に、必要なサイズの領域を自動
+	的に malloc() するように仕様追加した。これは MS-C 7.0 の仕様に
+	合わせたものである (Thanks to MiNEX)
+
+	* src/stdio/setvbuf.c: 引き数にかかわらず、_IOFBF に対して 
+	BUFSIZ バイトのバッファが割り当てられていた。これを、正しく引
+	き数で指定したバイト数のバッファを確保するように fix (Thanks
+	to MiNEX)
+
+	* src/stdio/ftell.c: バッファリングありの状態で、書き込み途中
+	に ftell() を呼ぶとが正しくない値を返していた。これを fix
+	(Thanks to sa2c)
+
+Wed 19 May 22:54:21 1993  Keiji Ohnishi  (tokyo)
+
+	* src/interrupt/intlevel.s: Ｃで書かれていたのをアセンブラで書
+	き直した
+
+	* src/math/mathcc: .cp ファイルをコンパイルするシェルスクリプ
+	ト mathcc を改善し、どこでエラーになったかわかるようにした。ま
+	た、コマンド名も Makefile の設定から import するように変更した
+
+Tue 18 May 23:42:24 1993  Keiichirou Murakami  (disneyland)
+
+	* src/sys_stat/chmod.c, src/unistd/_md2d.c: 16 May の chmod()
+	に対する修正では逆に悪影響がある (要するにエンバグ) ことがわかっ
+	たので、これを元に戻した。逆に、_mode2dos() を修正し、chmod()
+	に S_IEXEC を与えることで によって execd 用の実行ビットを立て
+	るようにした。もともと未使用ビットなのでおそらく問題はないと思
+	うが... 勝手にこういうことをするのはやはりいけないことなのかも
+	しれない。
+
+Mon 17 May 22:33:14 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/brk.c: brk() によってヒープエリアを縮小できなくなっ
+	ていた (修正によるエンバグ) のでこれを fix (Thanks to sa2c)
+
+	* src/_splitpath.c: _splitpath() の動作が正しくなかった。また、
+	path の最後に "/" をつけ忘れていたほか、ext の先頭に "." が足
+	りなかった。これを fix (Thanks to TUBO)
+
+	* include/iocs_i.h: IOCS コールのインライン関数に不備があった
+	ので正しくインライン展開されるように fix (Thanks to sa2c)
+
+Sun 16 May 23:53:03 1993  Keiichirou Murakami  (disneyland)
+
+	* include/unistd.h: getpagesize() のプロトタイプが欠けていたの
+	でそれを追加した
+
+Sun 16 May 19:39:41 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/write.c: テキストモードでの LF → CRLF の変換が戻
+	り値に影響を与えないように変更した。これにより、write() が与え
+	られたバイト数よりも多く書き込んでも、それはアプリケーションか
+	らはわからない。同時に、この影響で、fwrite() も、正しく項目数
+	を返すようになった。これは MS-C 7.0 の仕様にあわせたものである
+
+	* src/sys_scsi/*.s: include/mac の下の scsicall.mac の削除、シ
+	ンボルの移動にともなって scsicall.mac を include している部分
+	を doscall.mac に変更
+
+	* include/mac: この下を全て削除した。おそらく不要であろう。
+	scsicall.mac については include/doscall.mac にシンボルを移すこ
+	とで解決した。fecall.mac に対しては fefunc.h があるし、
+	errno.mac は使用されていなかった
+
+	* src/sys_dos/*.s. src/wstring/wcsdup.s: ASFLAGS から -u を外
+	したことによる未定義シンボル (シンボル名のミススペルによる) を
+	fix。このせいで正しくリンクできないことがあった (Thanks to
+	Ext)
+
+	* src/DefaultBases: ASFLAGS に -u (未定義シンボルを外部参照に
+	する) を入れていたが、このせいで未定義シンボルに気づかないこと
+	が多かった。これを削除
+
+Sun 16 May 14:44:13 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/qsort.c: qsort() にバグがあり、データを正しくソー
+	トできない場合があった。これを fix。また、要素数 0,1 でも比較
+	関数が呼び出されてしまうバグを fix (Thanks to りき)
+
+	* src/sys_stat/chmod.c: chmod() で Human68k のビットを設定でき
+	ない (拡張 UNIX ファイルモードの上位 16bit の部分) 仕様だった
+	のを fix。これで、S_IEXBIT などで実行ビットを設定できるように
+	なった (Thanks to りき)
+
+Sun 16 May 01:39:57 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.0.25 Release Lumiere としてリリース
+
+Sat 15 May 23:50:45 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos.h: Human68k のパス名の長さに関する正確な制限
+	値 (_MAX_PATH など) のマクロを sys/dos.h に追加した
+
+Sat 15 May 23:50:45 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_getinode.c: ドライブに対するアクセスを物理ドラ
+	イブ番号で行っていたため、ドライブの交換 (例えば drive.x) を行
+	うと stat() や opendir() で異なるドライブにアクセスが行ってし
+	まうことがあった (外道 Human68k の仕様による)。これを直接ドラ
+	イブ配置テーブルを参照するように fix
+
+Sat 15 May 19:20:33 1993  Keiichirou Murakami  (disneyland)
+
+	* src/glob/_print.c: 整数値の変換後のバイト数の計算が誤ってい
+	た。実際の値の +1 になっていたのでシグナルによる中断の際に表示
+	される 16 進値に不定のゴミが入ることがあった。これを fix
+
+	* utils/crash: このディレクトリに新たにコアダンプ解析ツールで
+	ある crash(8) を追加した。ただし、未完成
+
+Fri 14 May 22:16:04 1993  Keiichirou Murakami  (disneyland)
+
+	* include/iocscall.mac: 足りないエントリがあったのを追加。また、
+	iocs.x や rsdrv.sys opmdrv.sys ajoy.x で新たに拡張されたエント
+	リについても同様に追加した。これらの追加エントリに対する関数、
+	インラインはまだない。コール仕様の資料を求む... (Thanks to 
+	MAMI)
+
+Fri 14 May 00:16:51 1993  Keiichirou Murakami  (disneyland)
+
+	* include/math.h: __DIRECT_～__ のマクロを定義した時に、tan()
+	が間違った関数に変換され、正常にリンクできなくなっていた。これ
+	を fix。また、__DIRECT_IOFPU__ が __FPU_IOFPU__ になっていたの
+	で効かなくなっていた。これを fix
+
+	* utils/cmp.c, utils/Makefile: これらを utils/cmp というディレ
+	クトリの下に移動した
+
+Wed 12 May 21:53:38 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/read.c, src/unistd/lseek.c: テキストモードでオー
+	プンされたファイルに対して正しく EOF (^Z) を認識するように fix。
+	また、CR/LF→LF 変換アルゴリズムを改善した
+
+Tue 11 May 00:07:43 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/_exec.s, src/unistd/_return.s:
+	include/doscall.mac の DOS コール番号マクロの先頭に '_' をつけ
+	たために正常にリンクできなくなっていた。これを fix
+
+Mon 10 May 00:59:00 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/exec.h: N_TXTOFF()から、N_SYMOFF()までのオフセッ
+	ト計算マクロの計算式が間違っていたので、これを fix。また、これ
+	で求められるオフセットは以前 aouthdr を含めた値だったが、単に
+	テキストセクションの先頭からのオフセットとした
+
+	* include/stdio.h: <stdio.h> に fileno() のマクロ版を新たに追
+	加した
+
+	* src/unistd/filelength.c: filelength() で、ファイルの長さが正
+	しく求められず、しかもファイルポインタの位置がずれてしまうバグ
+	を fix
+
+Sun 9 May 22:45:34 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/chdir.c, src/unistd/chdrive.c,
+	include/sys/dos_i.h: _dos_chgdrv() のインライン記述ミス。その
+	ため副作用で chdir() と chdrive() がおかしくなっていた。これを
+	fix (Thanks to HIDE)
+
+	* src/stdio/gets.c: stdin がリダイレクトされていた場合 (対ブロッ
+	クデバイス) にも MAX_CANNON で入力制限が行われていた。これを、
+	ブロックデバイスに対しては無制限になるように fix (Thanks to あ
+	くの人)
+
+	* src/signal/_siginit.c: _dos_breakck() が、「設定状況」を返す
+	というのを「前の設定状況」だと勘違いしていた。そのためブレーク
+	フラグを個人の設定にかかわらず 1 に変更してしまう。これを fix
+	(Thanks to homy)
+
+	* src/startup/_exitsub.c: src/startup/_exit.c: fcloseall() と
+	closeall() を _exitsub() に移動した。こうしないと、 SIGINT の
+	ハンドラを起動後、終了処理で close() が行われず、 unlink がた
+	だしく処理されない。また、 stdio の buffering の処理も中途半端
+	になる可能性がある (Thanks to homy)
+
+Sun 9 May 00:31:50 1993  Keiichirou Murakami  (disneyland)
+
+	* utils/cmp.c: cmp(1) の仕様をより本物に近くなるように修正。す
+	なわち、-l オプション指定時はバイナリモードでオープンし、file1
+	が '-' なら stdin から file1 を読み込む。また、終了コードも正
+	しく変更した (Thanks to WILLs)
+
+Sat 8 May 22:14:54 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/fcloseall.c: 前回の標準ファイルハンドルのバグ修正
+	のため、エンバグによって標準ストリームの flush がなされなくなっ
+	てしまった。これを fix (Thanks to Eiji)
+
+Sat 8 May 09:00:28 1993  Keiichirou Murakami  (disneyland)
+
+	* src/startup/_start.c: システムリソースを設定する前に
+	malloc() が呼び出されるような関数呼び出しの順番になっていたの
+	で、brk () が失敗する原因となっていた。これを fix (Thanks to 
+	sa2c)
+
+	* src/stdlib/brk.c: ブレーク値と、メモリブロック終端を別々にし、
+	意味無くブレーク値が増加しないように fix (Thanks to sa2c)
+
+	* src/stdlib/sbrk.c, include/stdlib.h: 引数が size_t になって
+	いたため、前回の signed -> unsigned の変更で影響をうけていた。
+	いずれにせよ、引数の型は int が望ましいのでこれに変更した。ま
+	た、戻り値が変更「後」のブレーク値となっていたので、これを変更
+	「前」のブレーク値とした (Thanks to sa2c)
+
+Sat 8 May 01:52:22 1993  Keiichirou Murakami  (disneyland)
+
+	* include/mbctype.h, src/mbctype/ismbcalpha.c: エンバグで、英
+	大文字しか判定しないようになってしまった。英小文字の分を追加し
+	て fix (Thanks to WILLs)
+
+Fri 7 May 07:05:27 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/unlink.c: オープン中の ReadOnly ファイルについて
+	は unlink()が EPERM エラーで失敗するようにした (Thanks to
+	homy)
+
+	* include/sys/dos_i.h: _dos_print() のインライン関数の記述にミ
+	スがあった点をfix (Thanks to けんぢ)
+
+	* include/sys/exec.h: X 形式実行ファイルのヘッダ構造を定義した
+	構造体にミスがあったのと、もれがあったのを修正 (Thanks to
+	Sharl Morlaroll)
+
+	* src/stdlib/_splitpath.c: 引数がファイル名しか含まない場合は、
+	またはディレクトリ名しか含まない場合は分割後結果をノード名の所
+	に取り出するようにした
+
+Fri 7 May 06:11:18 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.0.24 Release Maurice としてリリース
+
+Thu 6 May 20:37:19 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/_sopen.c: モード "a" における _IOAPPEND の処理が抜
+	けていたため write 時の EOF へのシークがなされていなかった。こ
+	れを fix (Thanks to Eiji)
+
+	* src/unistd/_seekeof.c: O_APPEND モードを用いて新規ファイルを
+	オープンした場合に EOF へのシークに失敗してオープン自体が失敗
+	してしまうバグを fix
+
+	* src/stdlib/itoa.c, src/stdlib/ltoa.c, src/stdlib/ultoa.c: 新
+	たにこれらの関数を追加した (Thanks to Mr. 橋本)
+
+Wed 5 May 23:39:58 1993  Keiichirou Murakami  (disneyland)
+
+	* src/mbctype/ismbcalpha.c, src/mbctype/ismbcdigit.c,
+	src/mbctype/ismbclower.c, src/mbctype/ismbcupper.c,
+	src/mbctype/ismbcspace.c, include/mbctype.h: ismbcalpha(),
+	ismbcdigit(), ismbclower(), ismbcspace(), ismbcupper() の各関
+	数/マクロの定義が半角を対象としたものになっていた。これは本来
+	全角文字に対するものなので、修正した (Thanks to WILLs)
+
+Wed 5 May 18:28:06 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdio/fflush.c: 更新モードで READ/WRITE の切り替えが失敗
+	する場合があった。これは、fflush() が、fp->_flag の _IOR/_IOW
+	フラグを消し忘れる場合があるため。これを常に消すように修正 
+	(Thanks to Eiji)
+
+Wed 5 May 10:52:11 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: _dos_super(),_dos_ioctrlst()のインライ
+	ン関数のスタック補正値が間違っていたのを fix (Thanks to TomY)
+
+	* include/doscall.mac, src/sys_dos/*: DOS コール番号の先頭に
+	'_' (アンダースコア) が抜けていたのを修正 (Thanks to TomY)
+
+Wed 5 May 03:15:41 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/types.h: FD_CLR, FD_SET, FD_ISSET, FD_ZERO の各
+	マクロが 32bit 限定のままになっていたのを 128bit まで扱えるよ
+	うに拡張した
+
+	* src/unistd/_appfd.c, src/unistd/_usedfd.c,
+	src/unistd/_writable.c, src/unistd/_open.c,
+	src/unistd/_finit.c, src/unistd/close.c,
+	src/unistd/closeall.c, src/stdio/_sopen.c, src/stdio/_sinit.c,
+	src/stdio/fcloseall.c, include/stdio.h, include/sys/xunistd.h:
+	外部からインポートした標準ファイルハンドル 0～4 までプロセス終
+	了時にクローズしていた。そのため、リダイレクト処理をされた後に
+	呼び出されると親プロセス側に悪影響を与えていた。これをアプリケー
+	ション内でオープンしたファイルハンドルに限ってクローズするよう
+	に変更した。 (Thanks to homy)
+
+Tue 4 May 23:58:30 1993  Keiichirou Murakami  (disneyland)
+
+	* src/sys_dos/fnckeyst.s: _dos_fnckeyst()が、_dos_fnckeygt()と
+	同じになっていた。これを fix (Thanks to WILLs)
+
+	* src/startup/_enargv.c: 拡張子のないファイルを実行させた場合、
+	argv[0] に設定されるファイル名の最後に '.' が余計にくっつくバ
+	グを fix (ただし、これは Human68k の仕様によるものである) 
+	(Thanks to homy)
+
+Mon 3 May 16:57:18 1993  Keiichirou Murakami  (disneyland)
+
+	* src/errno/_errlist.c: ENOENT に対するエラーメッセージが間違っ
+	ていた。これを fix
+
+	* src/stdio/_doscan.c: まったく数値の構成要素を含まない文字列
+	に対して %d など、整数型の scanning を行った場合、エラーとなら
+	ずに処理が続行するバグを fix
+
+	* utils/cmp.c: BSD コンパチの cmp.x を新たに追加。とはいっても、
+	かなり急いでつくったので細かい性能的なチューニングはしていない。
+	あしからず
+
+Mon 3 May 01:13:04 1993  Keiichirou Murakami  (disneyland)
+
+	* src/math/cmpdf2.c: X68k Programming Series #2 x680x0 libc に
+	付属の libc-1.0.20 では、X68000+68882 という組み合わせで使用し
+	た場合に cmpdf2 が動作しなかった。現在のバージョンでは OK。
+	Makefile で、FPPP のオプションを間違えていた
+
+Sun 2 May 12:19:53 1993  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/_makepath.c: パス名の構成要素が null 文字列だった
+	ばあいに、NULL が渡された場合と同じように動作するように fix
+
+Sat 1 May 15:00:00 1993  Keiichirou Murakami  (disneyland)
+
+	* libc-1.0.23 Release Gaston' としてリリース
+
+Sat 1 May 08:34:56 1993  Keiichirou Murakami  (disneyland)
+
+	* src/unistd/unlink.c: unlink()で、ディレクトリも削除するよう
+	にした
+
+Thu Apr 30 23:39:22 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: _dos_fatchk2()、_dos_diskred2()、
+	_dos_diskwrt2() のインライン関数の記述ミスを fix
+
+	* include/sys/iocs_i.h: _iocs_sp_reggt() と _iocs_bgscrlgt()
+	のインライン関数の記述ミスを fix
+
+	* src/utime/utime.c: 与えられたパスのディレクトリエントリを潰
+	してから utime するように変更した。すなわち、エントリの時間は
+	変更できない (Human68k の仕様による)
+
+Thu Apr 30 03:18:20 1993  Keiji Ohnishi  (tokyo)
+
+	* include/sys/dos_i.h: インラインアセンブラの設定記述もれがあ
+	り、 gcc で、-fforce-mem と一緒に使用すると良くないことが起こ
+	る可能性があった。
+
+Thu Apr 30 02:56:42 1993  Keiichirou Murakami  (disneyland)
+
+	* include/limits.h: _POSIX_OPEN_MAX が 16 という意味不明の制限
+	になっていたので、ファイルハンドルを大量に消費する場合に不具合
+	が生じていた。これを 100 に fix (Thanks to homy)
+
+	* include/～.h: __NO_～_INLINE__ の処理の仕方を変更した。すな
+	わち、このマクロが定義されている、いないにかかわらず関数のプロ
+	トタイプを行う様にした。これは、マクロ定義を故意に #undef して
+	関数版を使うための措置 (Thanks to CANDY)
+
+	* include/～.h, include/sys/～.h: size_t 型は ANSIC で符号なし
+	と規定されている。にもかかわらず mbstowcs()など、戻り値として
+	(size_t) -1 を返す関数があることが気に入らず、size_t を符号つ
+	きで定義していた。これをやはり符号なしに戻した (Thanks to 
+	CANDY)
+
+	* include/ctype.h: isascii()とisiso()で、負の値もTRUEとして判
+	断してしまうバグを fix (Thanks to CANDY)
+
+	* include/sys/iocs_i.h, include/sys/iocs_p.h: インラインアセン
+	ブラの設定記述もれがあり、 gcc で、-fforce-mem と一緒に使用す
+	ると良くないことが起こりうる可能性があった。また、
+	_iocs_b_readid() のプロトタイプのミスと _iocs_b_hanjob() のミ
+	スを fix (Thanks to CANDY)
+
+Sun Apr 25 17:02:03 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/dos_i.h: _dos_inpout () のインライン関数の記述ミ
+	スを fix。このせいで kbhit () が動作しなくなっていた
+
+Sun Apr 25 18:31:00 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_stat.c: stat () での mount point の扱いを UNIX
+	コンパチに変更 st_ino, st_dev, st_size は、mount 先のルートディ
+	レクトリの st_mode, st_mtime は、 mount 元のディレクトリ
+
+	* src/sys_doseml/_dos_readlink.c: ファイルが見つからない場合の
+	エラーコードを変更
+
+Sun Apr 25 01:20:15 1993  Keiichirou Murakami  (disneyland)
+
+	* include/sys/iocs_p.h, include/sys/iocs_i.h,
+	src/sys_iocs/sp_regst.s: 2 番目の引数 mode が足りなかったので
+	それを追加
+
+Tue Apr 20 07:30:15 1993  Keiichirou Murakami  (disneyland)
+
+	* include/mac: doscall.mac iocscall.mac を include の方に移動
+	した。また、fefunc.dis を fefunc.h に rename して include ディ
+	レクトリに移動した。これは XC で正常にコンパイルできるようにす
+	るため
+
+	* include/cdecl.h: XC Ver2.0 のプリプロセッサのバグを回避する
+	ように書き換えた
+
+	* src/sys_utsname/uname.c: uname () でマシンタイプが正しく求め
+	られなかった点を fix
+
+	* validate/TestOurs/Makefile: lcheck.x を追加
+
+Mon Apr 19 23:15:00 1993  Keiji Ohnishi  (tokyo)
+
+	* src/sys_stat/_stat.c: stat (), lstat () で mount されていな
+	いドライブのディレクトリのサイズが常に 0 になっていた点を fix
+
+Mon Apr 19 12:00:00 1993  Keiichirou Murakami (disneyland)
+
+	* libc-1.0.20 Release Belle をリリース。これは X68k
+	Programming Series #2 X680x0 libc に収録された

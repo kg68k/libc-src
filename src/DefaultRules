@@ -1,0 +1,46 @@
+# -*-Fundamental-*-
+#
+# PROJECT C Library, X68000 PROGRAMMING INTERFACE DEFINITION
+# --------------------------------------------------------------------
+# This file is written by the Project C Library Group,  and completely
+# in public domain. You can freely use, copy, modify, and redistribute
+# the whole contents, without this notice.
+# --------------------------------------------------------------------
+# $Id: DefaultRules,v 1.10 1994/11/26 14:50:17 mura Exp $
+#
+
+#
+# ※ STD_DEFINES は変更しないで下さい。
+#
+
+       STD_DEFINES = -I../../include -D__DOS_INLINE__ -D__IOCS_INLINE__
+          COPTIONS = $(OPTIMIZE_FLAGS) $(WARNING_FLAGS)
+            CFLAGS = $(COPTIONS) $(STD_DEFINES) $(EXTRA_DEFINES) $(SXC_FLAGS)
+     STD_LIBRARIES =
+         LDOPTIONS =
+           LDFLAGS = $(LDOPTIONS) $(STD_LIBRARIES) $(EXTRA_LIBRARIES)
+
+indirect har -i
+
+.SUFFIXES:
+
+.SUFFIXES: .x .s .o .a .c .d .h
+
+%.o: %.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+%.o: %.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+%.x: %.o
+	$(LD) -o $@ $< $(LDFLAGS)
+
+
+all: $(LIB_TARGET)
+	$(AR) $(ARFLAGS) $(LIB_TARGET) $(OBJECTS)
+
+$(LIB_TARGET): $(OBJECTS) Makefile
+
+clean:
+	-$(RM) *.o *.BAK *.bak *~ .*~ \#* core a.out
+	-$(RM) *.orig *.rej *.aux *.log
