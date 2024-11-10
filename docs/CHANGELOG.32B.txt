@@ -1,0 +1,13 @@
+Fri  2 Dec 02:00:00 1994  Keiichirou Murakami  (disneyland)
+
+	* libc-1.1.32A Release Jafar としてパッチリリース
+
+Fri  2 Dec 01:40:31 1994  Keiichirou Murakami  (disneyland)
+
+	* src/stdlib/_dtos18.c: IEEE754浮動小数点における±0.0の表現に
+	関する例外を忘れていたために0を変換すると1.0e-309などのような
+	値になってしまう不具合を修正。
+
+	* include/search.h, src/search/lfind.c, src/search/lsearch.o:
+	検索関数 lfind() と lsearch() を新たに追加した。リニアサーチな
+	ので特に何の工夫もしていない。

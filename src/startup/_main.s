@@ -33,7 +33,7 @@ __main_1:
 		.data
 
 __libc_release:	.dc.b		'Jafar',0
-__libc_version:	.dc.b		'1.1.32',0
+__libc_version:	.dc.b		'1.1.32A',0
 
 		.bss
 

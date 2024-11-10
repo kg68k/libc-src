@@ -15,7 +15,7 @@
 include DefaultBases
 
         SUB_DIRS = assert conio ctype errno dirent fcntl ftw glob \
-		   grp interrupt locale math pwd setjmp sxstartup \
+		   grp interrupt locale math pwd search setjmp sxstartup \
 		   stdio stdlib string sys_doseml sys_locking \
 		   sys_resources sys_stat sys_timeb sys_timers \
 		   sys_utsname sys_wait time unistd utime

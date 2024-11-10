@@ -157,11 +157,39 @@ void _dtos18 (double x, int *decpt, int *sign, char *buffer)
     short e2;
     int e, n;
 
-    /* 基数2の指数を求める */
-    e2 = ((((unsigned short *) &x)[0] & 0x7FF0U) >> 4) - 1023;
+    /* 基数2の指数を求める(バイアスなしの状態) */
+    e2 = (((unsigned short *) &x)[0] & 0x7FF0U) >> 4;
 
-    /* 基数2の指数から基数10の指数を概算 (approx. log10(2)) */
-    e = ((int) (e2 * 77)) >> 8;
+    /* 指数が0の場合は±0.0チェック */
+    if (e2 == 0) {
+
+	unsigned long hi = ((unsigned long *) &x)[0] & 0xFFFFF;
+	unsigned long lo = ((unsigned long *) &x)[1];
+
+	/* 有効数字が全部0かどうか */
+	if (hi == 0 && lo == 0) {
+
+	    /* 文字列を設定 */
+	    buffer[0] = '0';
+
+	    /* NULを設定 */
+	    buffer[1] = '\0';
+
+	    /* 小数点位置を計算 */
+	    *decpt = 1;
+
+	    /* 符号を計算 */
+	    *sign = hi & 0x80000000UL;
+
+	    /* 確定 */
+	    return;
+
+	}
+
+    }
+
+    /* 2の指数にバイアスをかけてから10の指数を概算 (approx. log10(2)) */
+    e = ((int) ((e2 - 1023) * 77)) >> 8;
 
     /* 指数が正の場合 */
     if (e >= 0) {

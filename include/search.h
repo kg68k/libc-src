@@ -8,14 +8,6 @@
  * $Id: search.h,v 1.2 1993/10/06 16:44:50 mura Exp $
  */
 
-/*
-** PLEASE DO NOT USE THIS HEADER FILE !!!
-** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-** The following features will be supported in future, but not
-** supprted now.  If you want to use the features, please make
-** the following interfaces, and contribute them to us.
-*/
-
 #ifndef __search_h__
 #define __search_h__
 
